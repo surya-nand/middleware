@@ -3,15 +3,31 @@ const bodyParser = require('body-parser')
 
 const app = express()
 
+
 //Attaching or using middleware in the server
 app.use(bodyParser.urlencoded({extended: false}))
 
+
+//Custom middleware
+
+const checkAccess= (req,res,next) =>{
+    let access = true
+    if(access){
+        next()
+    } 
+    else{
+        res.send('Access Denied')
+    }
+}
+app.use(checkAccess)
 app.use(express.static('./public'))
+
 //Dummy data for understanding database concept
 
-const dummyData = [
-    {username: 'surya' , email: 'suryaanand10@gmail.com', password:"abcdef" }
-]
+const dummyData = {
+    "suryaanand10@gmail.com" : {password:"123", loggedIn: false},
+    "hastagsurya10@gmail.com":{password:"456", loggedIn: false}
+}
 
 app.get('/',(req,res)=>{
     res.sendFile(__dirname+'/index.html')
@@ -20,9 +36,8 @@ app.get('/',(req,res)=>{
 //Redirecting login page to landing page
 app.post('/login',(req,res)=>{
     //Checking the data from input with database
-    let Users =  dummyData.filter(user => user.email===(req.body.email) && user.password===(req.body.password))
-    let user = Users[0]
-    if(user){
+    if(dummyData[req.body.email]  && dummyData[req.body.email].password === req.body.password ){
+        dummyData[req.body.email].loggedIn === true
         res.redirect('/landingpage')
     }
     else{
@@ -32,7 +47,6 @@ app.post('/login',(req,res)=>{
     
     console.log(req.body)
 })
-
 
 app.get('/landingpage',(req,res)=>{
     res.send("Landing page")
