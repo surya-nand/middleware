@@ -6,7 +6,7 @@ const app = express()
 //Attaching or using middleware in the server
 app.use(bodyParser.urlencoded({extended: false}))
 
-
+app.use(express.static('./public'))
 //Dummy data for understanding database concept
 
 const dummyData = [
